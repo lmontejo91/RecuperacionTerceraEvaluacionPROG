@@ -21,7 +21,6 @@ import java.util.Set;
  */
 public class Bomberos {
     static ArrayList<String[]> datos_Intervenciones=new ArrayList<>();
-    static String datos_porLinea[]=new String[11];
     static Map<String, Integer> map_Intervenciones_porDistrito = new HashMap<String, Integer>();
     
     //MÉTODO que va a leer los archivos y almacenar los datos necesarios.
@@ -35,6 +34,7 @@ public class Bomberos {
                     lector.next();
                 } 
                 do{
+                    String datos_porLinea[]=new String[11];
                     for(int i=0; i<11;i++){
                         datos_porLinea[i]=lector.next();
                         //System.out.println(i+" --> "+datos_porLinea[i]);
@@ -58,7 +58,8 @@ public class Bomberos {
     
     public static String IntervencionConMasYMenosSalidas(){
         int contador=0, intervencion_MasSalidas=0, intervencion_MenosSalidas=0;
-        String nombre_intervenciones_MasSalidas=null, nombre_intervenciones_MenosSalidas=null;
+        String nombre_intervenciones_MasSalidas="", nombre_intervenciones_MenosSalidas="";
+        
         Map<String, Integer> map_salidasTotales_porIntervenion = new HashMap<String, Integer>()
         {{
              put("FUEGOS",0);
@@ -69,12 +70,13 @@ public class Bomberos {
              put("SALIDAS SIN INTERVENCION",0);
              put("SERVICIOS VARIOS",0);
         }};
+        
         ArrayList<Integer> salidasTotales_porIntervenion=new ArrayList<>();
         //int salidasTotales_porIntervenion[]=new int[7];
         
         for(int i=3; i<10; i++){
-            for(String[] elemento : datos_Intervenciones){
-               contador+=Integer.parseInt(elemento[i]);
+            for(String[] linea : datos_Intervenciones){
+               contador+=Integer.parseInt(linea[i]);
             }
             salidasTotales_porIntervenion.add(contador);
         }
@@ -87,12 +89,16 @@ public class Bomberos {
         map_salidasTotales_porIntervenion.put("SALIDAS SIN INTERVENCION", salidasTotales_porIntervenion.get(5));
         map_salidasTotales_porIntervenion.put("SERVICIOS VARIOS", salidasTotales_porIntervenion.get(6));
         
-        System.out.println(map_salidasTotales_porIntervenion);
+        //System.out.println(map_salidasTotales_porIntervenion);
         
+        /*Con la clase Collections y sus métodos max y min puedo obtener el máximo 
+        y mínimo de una lista de valores.*/
         intervencion_MasSalidas=Collections.max(map_salidasTotales_porIntervenion.values());
         intervencion_MenosSalidas=Collections.min(map_salidasTotales_porIntervenion.values());
-        map_salidasTotales_porIntervenion.containsValue(12040);
         
+        /*Los dos siguientes FOR utilizan el método getKeys (que está abajo del todo, debajo del main).
+        El método getKeys recibe mi mapa y un valor, y busca en un mapa temporal hecho con entrySet() las claves
+        que se corresponden con el valor que ha recibido. Las devuelve como string*/
         for (String key : getKeys(map_salidasTotales_porIntervenion, intervencion_MasSalidas)) {
             nombre_intervenciones_MasSalidas=nombre_intervenciones_MasSalidas.concat(key+", ");
         }
@@ -100,25 +106,50 @@ public class Bomberos {
         for (String key : getKeys(map_salidasTotales_porIntervenion, intervencion_MenosSalidas)) {
             nombre_intervenciones_MenosSalidas=nombre_intervenciones_MenosSalidas.concat(key+", ");
         }
-        
+       
         return "La intervención o intervenciones con MÁS salidas son las de "
                 +nombre_intervenciones_MasSalidas+" con un número total de "+intervencion_MasSalidas
                 +"\nLa intervención o intervenciones con MENOS salidas son las de "
                 +nombre_intervenciones_MenosSalidas+" con un número total de "+intervencion_MenosSalidas;        
     }
     
-    public static void numeroIntervenciones_porDistrito(){   
-        for(String[] elemento : datos_Intervenciones){
-            if(!map_Intervenciones_porDistrito.containsKey(elemento[2])){
-                map_Intervenciones_porDistrito.put(elemento[2], Integer.parseInt(elemento[10]));
+    public static void numeroIntervenciones_porDistrito(){         
+        for(String[] linea : datos_Intervenciones){
+            if(!map_Intervenciones_porDistrito.containsKey(linea[2])){
+                map_Intervenciones_porDistrito.put(linea[2], Integer.parseInt(linea[10]));
             }else{
-                map_Intervenciones_porDistrito.put(elemento[2], map_Intervenciones_porDistrito.get(elemento[2])+Integer.parseInt(elemento[10]));
+                map_Intervenciones_porDistrito.put(linea[2], map_Intervenciones_porDistrito.get(linea[2])+Integer.parseInt(linea[10]));
             }
         }
         
         System.out.println(map_Intervenciones_porDistrito);
         
     }
+    
+
+    
+    public static void main(String[] args) {
+        Scanner teclado=new Scanner(System.in);
+        File directorio_Bomberos = new File("Bomberos");
+        String distrito;
+    
+        leerArchivos(directorio_Bomberos);
+        
+        System.out.println(IntervencionConMasYMenosSalidas());
+        
+        System.out.println("-----------------------------------------------------------------");
+        numeroIntervenciones_porDistrito();
+        
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("¿De qué distrito quiere quiere mostrar información?");
+        distrito=teclado.nextLine();
+        System.out.println(distrito+" tuvo un número total de intervenciones de "+map_Intervenciones_porDistrito.get(distrito.toUpperCase()));
+    }
+    
+    
+    
+    
+    
     
     public static Set<String> getKeys(Map<String, Integer> map, Integer value) {
 
@@ -133,22 +164,4 @@ public class Bomberos {
       return result;
 
   }
-    
-    public static void main(String[] args) {
-        Scanner teclado=new Scanner(System.in);
-        File directorio_Bomberos = new File("Bomberos");
-        String distrito;
-    
-        //System.out.println(directorio_Bomberos.isDirectory());
-        //System.out.println(directorio_Bomberos.exists());
-        leerArchivos(directorio_Bomberos);
-        IntervencionConMasYMenosSalidas();
-        numeroIntervenciones_porDistrito();
-        
-        System.out.println("-----------------------------------------------------------------");
-        System.out.println("¿De qué distrito quiere quiere mostrar información?");
-        distrito=teclado.nextLine();
-        System.out.println(distrito+" tuvo un número total de intervenciones de "+map_Intervenciones_porDistrito.get(distrito.toUpperCase()));
-    }
-    
 }
