@@ -113,7 +113,7 @@ public class Bomberos {
                 +nombre_intervenciones_MenosSalidas+" con un número total de "+intervencion_MenosSalidas;        
     }
     
-    public static void numeroIntervenciones_porDistrito(){         
+    public static void numeroIntervenciones_porDistrito(){      
         for(String[] linea : datos_Intervenciones){
             if(!map_Intervenciones_porDistrito.containsKey(linea[2])){
                 map_Intervenciones_porDistrito.put(linea[2], Integer.parseInt(linea[10]));
@@ -138,7 +138,8 @@ public class Bomberos {
         System.out.println(IntervencionConMasYMenosSalidas());
         
         System.out.println("-----------------------------------------------------------------");
-        numeroIntervenciones_porDistrito();
+        /*Te he comentado esto porque daba error al ejecutarlo por lo del retorno de carro*/
+        //numeroIntervenciones_porDistrito();  
         
         System.out.println("-----------------------------------------------------------------");
         System.out.println("¿De qué distrito quiere quiere mostrar información?");
